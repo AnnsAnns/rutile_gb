@@ -16,7 +16,7 @@ pub struct CPURegistry {
     pub l: u8,
     // SP	-	-	Stack Pointer
     pub sp: u16,
-    // PC	-	-	Program Counter/Pointer 
+    // PC	-	-	Program Counter/Pointer
     pub pc: u16,
 
     pub interrupts_enabled: bool,
