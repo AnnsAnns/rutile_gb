@@ -5,14 +5,14 @@ mod misc;
 mod decoder;
 
 pub enum LogicTargets {
-    A,
     B,
     C,
     D,
     E,
     H,
     L,
-    HL
+    HL,
+    A,
 }
 
 pub enum Instructions {
