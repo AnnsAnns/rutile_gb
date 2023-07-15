@@ -1,3 +1,5 @@
+use self::instructions::Instructions;
+
 mod registry;
 mod flags;
 mod instructions;

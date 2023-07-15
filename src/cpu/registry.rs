@@ -18,6 +18,10 @@ pub struct CPURegistry {
     pub sp: u16,
     // PC	-	-	Program Counter/Pointer 
     pub pc: u16,
+
+    pub interrupts_enabled: bool,
+    pub halted: bool,
+    pub verylowpowermode: bool,
 }
 
 impl CPURegistry { 

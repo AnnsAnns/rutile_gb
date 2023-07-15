@@ -1,27 +1,26 @@
 use super::super::CPU;
 
-pub enum Instructions {
-    ADD(LogicTargets),
-    ADC(LogicTargets),
-    AND(LogicTargets),
-    XOR(LogicTargets),
-    SBC(LogicTargets),
-    OR(LogicTargets),
-    SUB(LogicTargets),
-    CP(LogicTargets),
-}
-
-pub enum LogicTargets {
-    A,
-    B,
-    C,
-    D,
-    E,
-    H,
-    L,
-}
+use super::LogicTargets;
+use super::Instructions;
 
 impl CPU {
+    fn inc(&mut self, target: &LogicTargets) {
+        let target = match target {
+            LogicTargets::A => &mut self.registry.a,
+            LogicTargets::B => &mut self.registry.b,
+            LogicTargets::C => &mut self.registry.c,
+            LogicTargets::D => &mut self.registry.d,
+            LogicTargets::E => &mut self.registry.e,
+            LogicTargets::H => &mut self.registry.h,
+            LogicTargets::L => &mut self.registry.l,
+        };
+
+        *target += 1;
+        self.registry.f.z_zero = *target == 0;
+        self.registry.f.n_subtraction_bcd = false;
+        self.registry.f.h_half_carry_bcd = (*target & 0xF) == 0;
+    }
+
     fn add(&mut self, value: u8, plus_carry: bool) -> u8 {
         let (add_val, overflowed) = self.registry.a.overflowing_add(value);
         // @TODO: Might be wrong way to do this?
@@ -71,7 +70,25 @@ impl CPU {
         self.registry.a
     }
 
-    fn logic_execution(&mut self, instruction: Instructions) {
+    fn dec(&mut self, target: &LogicTargets) {
+        let target = match target {
+            LogicTargets::A => &mut self.registry.a,
+            LogicTargets::B => &mut self.registry.b,
+            LogicTargets::C => &mut self.registry.c,
+            LogicTargets::D => &mut self.registry.d,
+            LogicTargets::E => &mut self.registry.e,
+            LogicTargets::H => &mut self.registry.h,
+            LogicTargets::L => &mut self.registry.l,
+        };
+
+        *target -= 1;
+        self.registry.f.z_zero = *target == 0;
+        self.registry.f.n_subtraction_bcd = true;
+        self.registry.f.h_half_carry_bcd = (*target & 0xF) == 0xF;
+    }
+
+    /// Returns true if the instruction is found, false if not
+    pub fn logic_execution(&mut self, instruction: &Instructions) -> bool {
         match instruction {
             Instructions::ADD(target) => {
                 match target {
@@ -169,8 +186,14 @@ impl CPU {
                     _ => panic!("Unimplemented/Invalid SBC target"),
                 };
             }
-            
-            _ => panic!("Unimplemented/Invalid instruction"),
-        }
+            Instructions::INC(target) => {
+                self.inc(target);
+            }
+            Instructions::DEC(target) => {
+                self.dec(target);
+            }
+            _ => return false,
+        };
+        return true;
     }
 }
