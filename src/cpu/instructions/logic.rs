@@ -13,6 +13,7 @@ impl CPU {
             LogicTargets::E => &mut self.registry.e,
             LogicTargets::H => &mut self.registry.h,
             LogicTargets::L => &mut self.registry.l,
+            // @TODO: Continue here
         };
 
         *target += 1;

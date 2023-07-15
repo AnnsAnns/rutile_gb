@@ -3,6 +3,7 @@ use super::CPU;
 mod logic;
 mod misc;
 mod decoder;
+mod mem;
 
 pub enum LogicTargets {
     B,
