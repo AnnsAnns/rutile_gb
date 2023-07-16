@@ -1,10 +1,10 @@
 use super::CPU;
 
-mod logic;
-mod misc;
-mod decoder;
-mod mem;
 mod bitshift;
+mod decoder;
+mod logic;
+mod mem;
+mod misc;
 
 pub enum LogicTargets {
     B,
@@ -19,21 +19,35 @@ pub enum LogicTargets {
     HL,
     SP,
     N8(u8),
-    N16(u16)
+    N16(u16),
+    E8(i8),
 }
 
 pub enum Instructions {
     // LOGIC INSTRUCTIONS
     ADD(LogicTargets),
+    ADDAHL(),
+    ADDHLR16(LogicTargets),
+    ADDHLSP(),
+    ADDSPE8(LogicTargets),
     ADC(LogicTargets),
+    ADCHL(),
     AND(LogicTargets),
+    ANDAHL(),
     XOR(LogicTargets),
+    XORHL(),
     SBC(LogicTargets),
+    SBCHL(),
     OR(LogicTargets),
+    ORHL(),
     SUB(LogicTargets),
+    SUBHL(),
     DEC(LogicTargets),
+    DECHL(),
     CP(LogicTargets),
+    CPAHL(),
     INC(LogicTargets),
+    INCHL(),
 
     // Bit Operations Instructions
     BIT(u8, LogicTargets),
@@ -92,8 +106,12 @@ pub enum Instructions {
 
 impl CPU {
     pub fn execution(&mut self, instruction: Instructions) {
-        if self.logic_execution(&instruction) {return;}
-        if self.misc_execution(&instruction) {return;}
+        if self.logic_execution(&instruction) {
+            return;
+        }
+        if self.misc_execution(&instruction) {
+            return;
+        }
         panic!("Unimplemented/Invalid instruction")
     }
 }
