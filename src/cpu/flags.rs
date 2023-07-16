@@ -9,6 +9,13 @@ const SUBTRACTION_FLAG_POS: u8 = 1 << 6;
 const HALF_CARRY_FLAG_POS: u8 = 1 << 5;
 const CARRY_FLAG_POS: u8 = 1 << 4;
 
+pub enum FlagCondition {
+    ZZero,
+    NZNotZero,
+    CCarry,
+    NCNotCarry,
+}
+
 pub struct Flags {
     pub z_zero: bool,
     pub n_subtraction_bcd: bool,

@@ -140,6 +140,7 @@ impl CPU {
                 self.registry.set_hl(self.registry.get_hl() + 1);
             },
             Instructions::LDHLDA() => {
+                // TODO: Check if this is correct
                 self.ld_mem_r8(&LogicTargets::HL, &LogicTargets::A);
                 self.registry.set_hl(self.registry.get_hl() - 1);
             },

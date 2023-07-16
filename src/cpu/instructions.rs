@@ -1,4 +1,4 @@
-use super::CPU;
+use super::{CPU, flags::FlagCondition};
 
 mod bitshift;
 mod decoder;
@@ -86,16 +86,16 @@ pub enum Instructions {
     LDN16SP(LogicTargets),
 
     // Jumps and Subroutines
-    CALL(u8),
-    CALLC(u8),
-    JP(u8),
-    JPC(u8),
-    JR(u8),
-    JRC(u8),
+    CALL(LogicTargets),
+    CALLC(FlagCondition, LogicTargets),
+    JP(LogicTargets),
+    JPC(FlagCondition, LogicTargets),
+    JR(LogicTargets),
+    JRC(LogicTargets),
     RET(),
-    RETC(),
+    RETC(FlagCondition),
     RETI(),
-    RST(u8),
+    RST(LogicTargets),
 
     // Stack Op Instructions
     ADDSP(LogicTargets),
@@ -115,6 +115,8 @@ pub enum Instructions {
     NOP(),
     SCF(),
     STOP(),
+
+    PREFIX(),
 }
 
 impl CPU {
@@ -129,6 +131,9 @@ impl CPU {
             return;
         }
         if self.bitshift_execution(&instruction) {
+            return;
+        }
+        if self.execute_load(&instruction) {
             return;
         }
         panic!("Unimplemented/Invalid instruction")
