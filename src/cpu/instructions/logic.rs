@@ -24,14 +24,12 @@ impl CPU {
 
     fn inc_16(&mut self, target: &LogicTargets) {
         let target = match target {
-            LogicTargets::BC => &mut self.registry.bc,
-            LogicTargets::DE => &mut self.registry.de,
-            LogicTargets::HL => &mut self.registry.hl,
-            LogicTargets::SP => &mut self.registry.sp,
-            _ => panic!("Unimplemented/Invalid INC target"),
+            LogicTargets::BC => self.registry.set_bc(self.registry.get_bc() + 1),
+            LogicTargets::DE => self.registry.set_de(self.registry.get_de() + 1),
+            LogicTargets::HL => self.registry.set_hl(self.registry.get_hl() + 1),
+            LogicTargets::SP => self.registry.sp -= 1,
+            _ => panic!("Unimplemented/Invalid DEC target"),
         };
-
-        *target += 1;
     }
 
     fn inc_hl(&mut self) {

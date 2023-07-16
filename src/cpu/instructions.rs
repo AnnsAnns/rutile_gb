@@ -5,6 +5,7 @@ mod decoder;
 mod logic;
 mod mem;
 mod misc;
+mod bitop;
 
 pub enum LogicTargets {
     B,
