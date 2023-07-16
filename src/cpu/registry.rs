@@ -25,6 +25,24 @@ pub struct CPURegistry {
 }
 
 impl CPURegistry { 
+    pub fn new() -> CPURegistry {
+        CPURegistry {
+            a: 0,
+            f: Flags::new(),
+            b: 0,
+            c: 0,
+            d: 0,
+            e: 0,
+            h: 0,
+            l: 0,
+            sp: 0,
+            pc: 0,
+            interrupts_enabled: false,
+            halted: false,
+            verylowpowermode: false,
+        }
+    }
+    
     /// Get Accumulator & Flags 
     pub fn get_af(&mut self) -> u16 {
         ((self.a as u16) << 8) | (self.f.get_flags() as u16)

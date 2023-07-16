@@ -7,3 +7,4 @@ authors = ["Annsann <github@annsann.eu>"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+eframe = "0.22.0"

@@ -1,9 +1,24 @@
+const bootrom: &[u8; 256] = include_bytes!("../dmg_boot.bin");
+
 pub struct Memory {
     // The Memory of the Emulator
-    memory: [u8; 0xFFFF],
+    pub memory: [u8; 0xFFFF],
 }
 
 impl Memory {
+    pub fn new() -> Memory {
+        let mut mem = Memory {
+            memory: [0; 0xFFFF],
+        };
+
+        // Load Bootrom into Memory
+        for i in 0..bootrom.len() {
+            mem.memory[i] = bootrom[i];
+        }
+
+        mem
+    }
+
     pub fn read_byte(&self, address: u16) -> u8 {
         self.memory[address as usize]
     }

@@ -9,6 +9,7 @@ const SUBTRACTION_FLAG_POS: u8 = 1 << 6;
 const HALF_CARRY_FLAG_POS: u8 = 1 << 5;
 const CARRY_FLAG_POS: u8 = 1 << 4;
 
+#[derive(Debug)]
 pub enum FlagCondition {
     ZZero,
     NZNotZero,
@@ -24,6 +25,15 @@ pub struct Flags {
 }
 
 impl Flags {
+    pub fn new() -> Flags {
+        Flags {
+            z_zero: false,
+            n_subtraction_bcd: false,
+            h_half_carry_bcd: false,
+            c_carry: false,
+        }
+    }
+
     pub fn get_flags(&mut self) -> u8 {
         let mut flags: u8 = 0x00;
 

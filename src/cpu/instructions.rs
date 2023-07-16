@@ -8,6 +8,7 @@ mod misc;
 mod bitop;
 mod load;
 
+#[derive(Debug)]
 pub enum LogicTargets {
     B,
     C,
@@ -26,6 +27,7 @@ pub enum LogicTargets {
     E8
 }
 
+#[derive(Debug)]
 pub enum Instructions {
     // LOGIC INSTRUCTIONS
     ADD(LogicTargets),
@@ -120,7 +122,7 @@ pub enum Instructions {
 }
 
 impl CPU {
-    pub fn execution(&mut self, instruction: Instructions) {
+    pub fn execution(&mut self, instruction: &Instructions) {
         if self.logic_execution(&instruction) {
             return;
         }

@@ -8,17 +8,28 @@ use self::instructions::Instructions;
 
 pub struct CPU {
     // The Main Engine of the Emulator
-    registry: registry::CPURegistry,
-    memory: Memory
+    pub registry: registry::CPURegistry,
+    pub memory: Memory,
+    pub last_instruction: Instructions
 }
 
 impl CPU {
-    fn step(&mut self) {
+    pub fn new() -> CPU {
+        CPU {
+            registry: registry::CPURegistry::new(),
+            memory: Memory::new(),
+            last_instruction: Instructions::NOP()
+        }
+    }
+
+    pub fn step(&mut self) {
         let mut opcode = self.memory.read_byte(self.registry.pc);
         let prefixed = opcode == 0xCB;
         if prefixed {
           opcode = self.memory.read_byte(self.registry.pc + 1);
         }
-        self.execution(Instructions::read_byte(opcode, prefixed).unwrap_or(Instructions::NOP()));
+        let instruction = Instructions::read_byte(opcode, prefixed).unwrap_or(Instructions::NOP());
+        self.execution(&instruction);
+        self.last_instruction = instruction;
     }
 }
