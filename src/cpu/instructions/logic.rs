@@ -13,7 +13,7 @@ impl CPU {
             LogicTargets::E => &mut self.registry.e,
             LogicTargets::H => &mut self.registry.h,
             LogicTargets::L => &mut self.registry.l,
-            // @TODO: Continue here
+            _ => panic!("Unimplemented/Invalid INC target"),
         };
 
         *target += 1;
@@ -71,6 +71,28 @@ impl CPU {
         self.registry.a
     }
 
+    fn dec_hl(&mut self) {
+        let hl = self.registry.get_hl();
+        let val = self.memory.read_byte(hl);
+        let (sub_val, overflowed) = val.overflowing_sub(1);
+        self.memory.write_byte(hl, sub_val);
+
+        self.registry.f.z_zero = sub_val == 0;
+        self.registry.f.n_subtraction_bcd = true;
+        self.registry.f.c_carry = overflowed;
+        self.registry.f.h_half_carry_bcd = (val & 0xF) == 0;
+    }
+
+    fn dec_16(&mut self, target: &LogicTargets) {
+        let target = match target {
+            LogicTargets::BC => self.registry.set_bc(self.registry.get_bc() - 1),
+            LogicTargets::DE => self.registry.set_de(self.registry.get_de() - 1),
+            LogicTargets::HL => self.registry.set_hl(self.registry.get_hl() - 1),
+            LogicTargets::SP => self.registry.sp -= 1,
+            _ => panic!("Unimplemented/Invalid DEC target"),
+        };
+    }
+
     fn dec(&mut self, target: &LogicTargets) {
         let target = match target {
             LogicTargets::A => &mut self.registry.a,
@@ -80,6 +102,7 @@ impl CPU {
             LogicTargets::E => &mut self.registry.e,
             LogicTargets::H => &mut self.registry.h,
             LogicTargets::L => &mut self.registry.l,
+            _ => panic!("Unimplemented/Invalid DEC target"),
         };
 
         *target -= 1;
@@ -191,8 +214,15 @@ impl CPU {
                 self.inc(target);
             }
             Instructions::DEC(target) => {
-                self.dec(target);
+                match target {
+                    LogicTargets::BC => self.dec_16(target),
+                    LogicTargets::DE => self.dec_16(target),
+                    LogicTargets::HL => self.dec_16(target),
+                    LogicTargets::SP => self.dec_16(target),
+                    _ => self.dec(target),
+                };
             }
+            Instructions::DECSP() => self.dec_16(&LogicTargets::SP),
             _ => return false,
         };
         return true;

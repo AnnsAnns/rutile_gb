@@ -4,6 +4,7 @@ mod logic;
 mod misc;
 mod decoder;
 mod mem;
+mod bitshift;
 
 pub enum LogicTargets {
     B,
@@ -12,8 +13,13 @@ pub enum LogicTargets {
     E,
     H,
     L,
-    HL,
     A,
+    BC,
+    DE,
+    HL,
+    SP,
+    N8(u8),
+    N16(u16)
 }
 
 pub enum Instructions {
