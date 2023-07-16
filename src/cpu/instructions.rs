@@ -6,6 +6,7 @@ mod logic;
 mod mem;
 mod misc;
 mod bitop;
+mod load;
 
 pub enum LogicTargets {
     B,
@@ -111,6 +112,12 @@ impl CPU {
             return;
         }
         if self.misc_execution(&instruction) {
+            return;
+        }
+        if self.execute_bitop(&instruction) {
+            return;
+        }
+        if self.bitshift_execution(&instruction) {
             return;
         }
         panic!("Unimplemented/Invalid instruction")

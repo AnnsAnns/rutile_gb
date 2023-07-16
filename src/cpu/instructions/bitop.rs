@@ -64,7 +64,7 @@ impl CPU {
         }
     }
 
-    fn execute_bitop(&mut self, instruction: &Instructions) -> bool {
+    pub fn execute_bitop(&mut self, instruction: &Instructions) -> bool {
         match instruction {
             Instructions::BIT(test_bit, target) => match target {
                 LogicTargets::A => self.bit(test_bit, self.registry.a),
