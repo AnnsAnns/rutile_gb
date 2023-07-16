@@ -21,9 +21,9 @@ pub enum LogicTargets {
     AF,
     HL,
     SP,
-    N8(u8),
-    N16(u16),
-    E8(i8),
+    N8,
+    N16,
+    E8
 }
 
 pub enum Instructions {

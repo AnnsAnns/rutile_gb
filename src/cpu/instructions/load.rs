@@ -13,7 +13,7 @@ impl CPU {
             LogicTargets::E => self.registry.e,
             LogicTargets::H => self.registry.h,
             LogicTargets::L => self.registry.l,
-            LogicTargets::N8(n) => *n,
+            LogicTargets::N8 => self.memory.read_byte(self.registry.pc),
             LogicTargets::HL => {
                 let address = self.registry.get_hl();
                 self.memory.read_byte(address)
@@ -28,7 +28,7 @@ impl CPU {
             LogicTargets::DE => self.registry.get_de(),
             LogicTargets::HL => self.registry.get_hl(),
             LogicTargets::AF => self.registry.get_af(),
-            LogicTargets::N16(n) => *n,
+            LogicTargets::N16 => self.memory.read_word(self.registry.pc),
             LogicTargets::SP => self.registry.sp,
             _ => panic!("Invalid SET Instruction"),
         }
@@ -64,7 +64,7 @@ impl CPU {
         let value = self.target_to_value_r8(value);
         let address = match target {
             LogicTargets::HL => self.registry.get_hl(),
-            LogicTargets::N16(n) => *n,
+            LogicTargets::N16 => self.memory.read_word(self.registry.pc),
             _ => panic!("Invalid LD HL R8 Instruction"),
         };
         self.memory.write_byte(address, value);
@@ -73,7 +73,7 @@ impl CPU {
     /// Store value in register A into the byte at address n16, provided the address is between $FF00 and $FFFF.
     fn ldh_r16_mem(&mut self, target: &LogicTargets, use_c: bool) {
         let address = match target {
-            LogicTargets::N16(n) => *n,
+            LogicTargets::N16 => self.memory.read_word(self.registry.pc),
             _ => panic!("Invalid LDH R16 MEM Instruction"),
         };
 
@@ -87,9 +87,20 @@ impl CPU {
         }
     }
 
+    fn ldhc_mem(&mut self, use_c: bool) {
+        let address = 0xFF00;
+
+        if use_c {
+            let c = self.registry.c;
+            self.memory.write_byte(address + c as u16, self.registry.a);
+        } else { 
+            self.memory.write_byte(address, self.registry.a);
+        }
+    }
+
     fn ldh_a_n16(&mut self, target: &LogicTargets) {
         let address = match target {
-            LogicTargets::N16(n) => *n,
+            LogicTargets::N16 => self.memory.read_word(self.registry.pc),
             _ => panic!("Invalid LDH A N16 Instruction"),
         };
 
@@ -121,7 +132,7 @@ impl CPU {
             Instructions::LDHL(value) => self.ld_mem_r8(&LogicTargets::HL, value),
             Instructions::LDR16(target) => self.ld_mem_r8(&LogicTargets::A, target),
             Instructions::LDHN16A(target) => self.ldh_r16_mem(target, false),
-            Instructions::LDHCA() => self.ldh_r16_mem(&LogicTargets::N16(0xFF00), true),
+            Instructions::LDHCA() => self.ldhc_mem( true),
             Instructions::LDHAN16(target) => self.ldh_a_n16(target),
             Instructions::LDHAC() => self.ldh_a_c(),
             Instructions::LDHLIA() => {
@@ -142,7 +153,7 @@ impl CPU {
             },
             Instructions::LDN16SP(target) => {
                 let target = match target {
-                    LogicTargets::N16(n) => *n,
+                    LogicTargets::N16 => self.memory.read_word(self.registry.pc),
                     _ => panic!("Invalid LD N16 SP Instruction"),
                 };
                 self.memory.write_byte(target, (self.registry.sp & 0xFF) as u8);

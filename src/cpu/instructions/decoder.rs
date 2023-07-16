@@ -53,6 +53,12 @@ impl Instructions {
 
         match byte {
             0x00 => Some(Instructions::NOP()),
+            0x01 => Some(Instructions::LD(LogicTargets::BC, LogicTargets::N16)),
+            0x02 => Some(Instructions::LD(LogicTargets::BC, LogicTargets::A)),
+            0x03 => Some(Instructions::INC(LogicTargets::BC)),
+            0x04 => Some(Instructions::INC(LogicTargets::B)),
+            0x05 => Some(Instructions::DEC(LogicTargets::B)),
+            0x06 => Some(Instructions::LD(LogicTargets::B, LogicTargets::N8)),
             0x10 => Some(Instructions::STOP()),
             _ => None
         }

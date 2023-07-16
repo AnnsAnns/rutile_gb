@@ -162,7 +162,7 @@ impl CPU {
 
     fn add_sp_e8(&mut self, target: &LogicTargets) {
         let target = match target {
-            LogicTargets::E8(value) => *value as i16,
+            LogicTargets::E8 => self.memory.read_byte(self.registry.sp) as i16,
             _ => panic!("Unimplemented/Invalid ADD target"),
         };
 
@@ -181,7 +181,7 @@ impl CPU {
         match instruction {
             Instructions::ADD(target) => {
                 match target {
-                    LogicTargets::N8(value) => self.add(*value, false),
+                    LogicTargets::N8 => self.add(self.memory.read_byte(self.registry.sp), false),
                     LogicTargets::A => self.add(self.registry.a, false),
                     LogicTargets::B => self.add(self.registry.b, false),
                     LogicTargets::C => self.add(self.registry.c, false),
@@ -198,7 +198,7 @@ impl CPU {
             Instructions::ADDSPE8(target) => self.add_sp_e8(target),
             Instructions::ADC(target) => {
                 match target {
-                    LogicTargets::N8(value) => self.add(*value, true),
+                    LogicTargets::N8 => self.add(self.memory.read_byte(self.registry.sp), true),
                     LogicTargets::A => self.add(self.registry.a, true),
                     LogicTargets::B => self.add(self.registry.b, true),
                     LogicTargets::C => self.add(self.registry.c, true),
@@ -212,7 +212,7 @@ impl CPU {
             Instructions::ADCHL() => self.add_hl(true),
             Instructions::AND(target) => {
                 match target {
-                    LogicTargets::N8(value) => self.and(*value),
+                    LogicTargets::N8 => self.and(self.memory.read_byte(self.registry.sp)),
                     LogicTargets::A => self.and(self.registry.a),
                     LogicTargets::B => self.and(self.registry.b),
                     LogicTargets::C => self.and(self.registry.c),
@@ -226,7 +226,7 @@ impl CPU {
             Instructions::ANDAHL() => self.and(self.memory.read_byte(self.registry.get_hl())),
             Instructions::OR(target) => {
                 match target {
-                    LogicTargets::N8(value) => self.or(*value),
+                    LogicTargets::N8 => self.or(self.memory.read_byte(self.registry.sp)),
                     LogicTargets::A => self.or(self.registry.a),
                     LogicTargets::B => self.or(self.registry.b),
                     LogicTargets::C => self.or(self.registry.c),
@@ -242,7 +242,7 @@ impl CPU {
             }
             Instructions::XOR(target) => {
                 match target {
-                    LogicTargets::N8(value) => self.xor(*value),
+                    LogicTargets::N8 => self.xor(self.memory.read_byte(self.registry.sp)),
                     LogicTargets::A => self.xor(self.registry.a),
                     LogicTargets::B => self.xor(self.registry.b),
                     LogicTargets::C => self.xor(self.registry.c),
@@ -258,7 +258,7 @@ impl CPU {
             }
             Instructions::CP(target) => {
                 match target {
-                    LogicTargets::N8(value) => self.sub_and_cp(*value, false, true),
+                    LogicTargets::N8 => self.sub_and_cp(self.memory.read_byte(self.registry.sp), false, true),
                     LogicTargets::A => self.sub_and_cp(self.registry.a, false, true),
                     LogicTargets::B => self.sub_and_cp(self.registry.b, false, true),
                     LogicTargets::C => self.sub_and_cp(self.registry.c, false, true),
@@ -274,7 +274,7 @@ impl CPU {
             }
             Instructions::SUB(target) => {
                 match target {
-                    LogicTargets::N8(value) => self.sub_and_cp(*value, false, false),
+                    LogicTargets::N8 => self.sub_and_cp(self.memory.read_byte(self.registry.sp), false, false),
                     LogicTargets::A => self.sub_and_cp(self.registry.a, false, false),
                     LogicTargets::B => self.sub_and_cp(self.registry.b, false, false),
                     LogicTargets::C => self.sub_and_cp(self.registry.c, false, false),
@@ -290,7 +290,7 @@ impl CPU {
             }
             Instructions::SBC(target) => {
                 match target {
-                    LogicTargets::N8(value) => self.sub_and_cp(*value, true, false),
+                    LogicTargets::N8 => self.sub_and_cp(self.memory.read_byte(self.registry.sp), true, false),
                     LogicTargets::A => self.sub_and_cp(self.registry.a, true, false),
                     LogicTargets::B => self.sub_and_cp(self.registry.b, true, false),
                     LogicTargets::C => self.sub_and_cp(self.registry.c, true, false),
