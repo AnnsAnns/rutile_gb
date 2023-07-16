@@ -18,6 +18,7 @@ pub enum LogicTargets {
     A,
     BC,
     DE,
+    AF,
     HL,
     SP,
     N8(u8),
@@ -72,7 +73,17 @@ pub enum Instructions {
 
     // Load Instructions
     LD(LogicTargets, LogicTargets),
-    LDH(LogicTargets, LogicTargets),
+    LDHL(LogicTargets),
+    LDR16(LogicTargets),
+    LDHN16A(LogicTargets),
+    LDHCA(),
+    LDHAN16(LogicTargets),
+    LDHAC(),
+    LDHLIA(),
+    LDHLDA(),
+    LDAHLD(),
+    LDAHLI(),
+    LDN16SP(LogicTargets),
 
     // Jumps and Subroutines
     CALL(u8),
