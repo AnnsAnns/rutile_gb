@@ -10,8 +10,8 @@ use eframe::egui;
 use ui::MyApp;
 
 fn main() {
-    let mut cpu: CPU = CPU::new();
-    let mut ui = MyApp::init(cpu);
+    let cpu: CPU = CPU::new();
+    let ui = MyApp::init(cpu);
 
     let options = eframe::NativeOptions {
         initial_window_size: Some(egui::vec2(800.0, 1250.0)),

@@ -1,4 +1,4 @@
-use crate::cpu::flags::{Flags, FlagCondition};
+use crate::cpu::flags::{FlagCondition};
 
 use super::{Instructions, LogicTargets};
 
@@ -8,7 +8,7 @@ fn tail_to_logic_target(mut tail: u8) -> LogicTargets {
     };
 
     // I'd do this via a transmute but that'd be unsafe so lets not :P
-    match (tail) {
+    match tail {
         0x00 => LogicTargets::B,
         0x01 => LogicTargets::C,
         0x02 => LogicTargets::D,

@@ -23,7 +23,7 @@ impl CPU {
     }
 
     fn inc_16(&mut self, target: &LogicTargets) {
-        let target = match target {
+        let _target = match target {
             LogicTargets::BC => self.registry.set_bc(self.registry.get_bc() + 1),
             LogicTargets::DE => self.registry.set_de(self.registry.get_de() + 1),
             LogicTargets::HL => self.registry.set_hl(self.registry.get_hl() + 1),
@@ -116,7 +116,7 @@ impl CPU {
     }
 
     fn dec_16(&mut self, target: &LogicTargets) {
-        let target = match target {
+        let _target = match target {
             LogicTargets::BC => self.registry.set_bc(self.registry.get_bc() - 1),
             LogicTargets::DE => self.registry.set_de(self.registry.get_de() - 1),
             LogicTargets::HL => self.registry.set_hl(self.registry.get_hl() - 1),

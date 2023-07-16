@@ -44,7 +44,7 @@ impl CPU {
 
         let new_carry = target & 0x80 == 0x80;
 
-        if(left) {
+        if left {
             if through_carry {
                 target = (target << 1) | carry as u8;
             } else {
