@@ -1,4 +1,4 @@
-const bootrom: &[u8; 256] = include_bytes!("../dmg_boot.bin");
+const BOOTROM: &[u8; 256] = include_bytes!("../dmg_boot.bin");
 
 pub struct Memory {
     // The Memory of the Emulator
@@ -12,8 +12,8 @@ impl Memory {
         };
 
         // Load Bootrom into Memory
-        for i in 0..bootrom.len() {
-            mem.memory[i] = bootrom[i];
+        for i in 0..BOOTROM.len() {
+            mem.memory[i] = BOOTROM[i];
         }
 
         mem

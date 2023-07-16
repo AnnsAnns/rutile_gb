@@ -1,31 +1,33 @@
 use eframe::{egui::{self, RichText}, epaint::Color32};
 
 use crate::cpu::CPU;
+use crate::cpu::instructions::Instructions;
 
 pub struct MyApp {
-    name: String,
     speed: u64,
     cpu: CPU,
     halt: bool,
+    single_step: bool,
     img: egui::ColorImage
 }
 
 impl MyApp {
     pub fn init(cpu: CPU) -> Self {
         Self {
-            name: "Arthur".to_owned(),
-            speed: 1,
+            speed: 0,
             cpu: cpu,
             halt: false,
-            img: egui::ColorImage::new([160, 144], Color32::WHITE)
+            img: egui::ColorImage::new([160, 144], Color32::WHITE),
+            single_step: false
         }
     }
 }
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        if !self.halt && (ctx.frame_nr() % (100 - self.speed) == 0) {
+        if self.single_step || (!self.halt && self.speed > 0 && (ctx.frame_nr() % (100 - self.speed) == 0)) {
             self.cpu.step();
+            self.single_step = false;
         }
 
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -39,6 +41,9 @@ impl eframe::App for MyApp {
             ui.add(egui::Slider::new(&mut self.speed, 0..=100).text("Emulator Speed"));
             if ui.button("Stop/Resume").clicked() {
                 self.halt = !self.halt;
+            }
+            if ui.button("Single Step").clicked() {
+                self.single_step = true;
             }
             ui.horizontal(|ui| {
                 ui.image(&texture, texture.size_vec2());
@@ -81,8 +86,19 @@ impl eframe::App for MyApp {
                         ));
                 });
                 ui.vertical(|ui| {
-                    ui.label(RichText::new("Instruction:").strong().underline());
-                    ui.label(format!("{:?}", self.cpu.last_instruction))
+                    ui.label(RichText::new("Instruction Info:").strong().underline());
+                    ui.label(format!("Current Instruction: {:?}", self.cpu.last_instruction));
+                    let mut opcode = self.cpu.memory.read_byte(self.cpu.registry.pc);
+                    let prefixed = opcode == 0xCB;
+                    if prefixed {
+                        opcode = self.cpu.memory.read_byte(self.cpu.registry.pc + 1);
+                    }
+                    let next_instruction = Instructions::read_byte(opcode, prefixed).unwrap_or(Instructions::NOP());
+                    ui.label(format!("Next Instruction if not SP change: {:?}", next_instruction));
+                    ui.label(format!("Is prefixed: {}", prefixed));
+                    ui.label(format!("N8: {}", self.cpu.memory.read_byte(self.cpu.registry.sp)));
+                    ui.label(format!("N16: {}", self.cpu.memory.read_word(self.cpu.registry.sp)));
+                    ui.label(format!("E8: {}", self.cpu.memory.read_byte(self.cpu.registry.pc) as i8));
                 })
             });
             ui.vertical(|ui| {
@@ -92,7 +108,5 @@ impl eframe::App for MyApp {
                 });
             })
         });
-
-        // std::thread::sleep(std::time::Duration::from_millis(1000 / self.speed as u64));
     }
 }

@@ -1,6 +1,6 @@
 mod registry;
 mod flags;
-mod instructions;
+pub(crate) mod instructions;
 
 use crate::memory::Memory;
 
@@ -27,9 +27,15 @@ impl CPU {
         let prefixed = opcode == 0xCB;
         if prefixed {
           opcode = self.memory.read_byte(self.registry.pc + 1);
+          self.registry.pc += 1;
         }
+        let previous_pc = self.registry.pc;
         let instruction = Instructions::read_byte(opcode, prefixed).unwrap_or(Instructions::NOP());
         self.execution(&instruction);
+        
+        if self.registry.pc == previous_pc {
+            self.registry.pc += 1;
+        }
         self.last_instruction = instruction;
     }
 }
