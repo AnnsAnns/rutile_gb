@@ -64,13 +64,9 @@ impl CPU {
         }
     }
 
-    fn ld_mem_r8(&mut self, value: &LogicTargets, target: &LogicTargets) {
+    fn ld_mem_r8(&mut self, target: &LogicTargets, value: &LogicTargets) {
         let value = self.target_to_value_r8(value);
-        let address = match target {
-            LogicTargets::HL => self.registry.get_hl(),
-            LogicTargets::N16 => self.memory.read_word(self.registry.pc),
-            _ => panic!("Invalid LD HL R8 Instruction"),
-        };
+        let address = self.target_to_value_r16(target);
         self.memory.write_byte(address, value);
     }
 
@@ -98,6 +94,7 @@ impl CPU {
             let c = self.registry.c;
             self.memory.write_byte(address + c as u16, self.registry.a);
         } else { 
+            let addr = address + self.memory.read_byte(self.registry.pc) as u16;
             self.memory.write_byte(address, self.registry.a);
         }
     }
@@ -124,6 +121,12 @@ impl CPU {
         match instruction {
             Instructions::LD(target, value) => {
                 match target {
+                    LogicTargets::N8 => {
+                        match value {
+                            LogicTargets::A => self.ldhc_mem(false),
+                            _ => panic!("Invalid SET Instruction {:?} {:?}", target, value),
+                        }
+                    },
                     LogicTargets::A | LogicTargets::B | LogicTargets::C | LogicTargets::D | LogicTargets::E | LogicTargets::H | LogicTargets::L => {
                         self.ld_r8(target, value);
                     },
@@ -134,6 +137,7 @@ impl CPU {
                 }
             },
             Instructions::LDHL(value) => self.ld_mem_r8(&LogicTargets::HL, value),
+            Instructions::LDR16R8(target, value) => self.ld_mem_r8(target, value),
             Instructions::LDR16(target) => self.ld_mem_r8(&LogicTargets::A, target),
             Instructions::LDHN16A(target) => self.ldh_r16_mem(target, false),
             Instructions::LDHCA() => self.ldhc_mem( true),

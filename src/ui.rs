@@ -25,7 +25,7 @@ impl MyApp {
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        if self.single_step || (!self.halt && self.speed > 0 && (ctx.frame_nr() % (100 - self.speed) == 0)) {
+        if self.single_step || ((self.speed == 100) ||(!self.halt && self.speed > 0 && (ctx.frame_nr() % (100 - self.speed) == 0))) {
             self.cpu.step();
             self.single_step = false;
         }
@@ -94,7 +94,7 @@ impl eframe::App for MyApp {
                         opcode = self.cpu.memory.read_byte(self.cpu.registry.pc + 1);
                     }
                     let next_instruction = Instructions::read_byte(opcode, prefixed).unwrap_or(Instructions::NOP());
-                    ui.label(format!("Next Instruction if not SP change: {:?}", next_instruction));
+                    ui.label(format!("Next Instruction if not SP change: {:?} - Opcode: {:02X}", next_instruction, opcode));
                     ui.label(format!("Is prefixed: {}", prefixed));
                     ui.label(format!("N8: {}", self.cpu.memory.read_byte(self.cpu.registry.sp)));
                     ui.label(format!("N16: {}", self.cpu.memory.read_word(self.cpu.registry.sp)));
@@ -108,5 +108,7 @@ impl eframe::App for MyApp {
                 });
             })
         });
+
+        ctx.request_repaint();
     }
 }

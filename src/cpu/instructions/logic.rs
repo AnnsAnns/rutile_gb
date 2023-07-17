@@ -16,7 +16,9 @@ impl CPU {
             _ => panic!("Unimplemented/Invalid INC target"),
         };
 
-        *target += 1;
+        let (val, _car) = target.overflowing_add(1);
+        *target = val;
+
         self.registry.f.z_zero = *target == 0;
         self.registry.f.n_subtraction_bcd = false;
         self.registry.f.h_half_carry_bcd = (*target & 0xF) == 0;
@@ -27,7 +29,7 @@ impl CPU {
             LogicTargets::BC => self.registry.set_bc(self.registry.get_bc() + 1),
             LogicTargets::DE => self.registry.set_de(self.registry.get_de() + 1),
             LogicTargets::HL => self.registry.set_hl(self.registry.get_hl() + 1),
-            LogicTargets::SP => self.registry.sp -= 1,
+            LogicTargets::SP => self.registry.sp = self.registry.sp.overflowing_add(1).0,
             _ => panic!("Unimplemented/Invalid DEC target"),
         };
     }

@@ -78,6 +78,7 @@ pub enum Instructions {
     LD(LogicTargets, LogicTargets),
     LDHL(LogicTargets),
     LDR16(LogicTargets),
+    LDR16R8(LogicTargets, LogicTargets),
     LDHN16A(LogicTargets),
     LDHCA(),
     LDHAN16(LogicTargets),
@@ -142,6 +143,6 @@ impl CPU {
         if self.jump_execution(&instruction) {
             return;
         }
-        panic!("Unimplemented/Invalid instruction")
+        panic!("Unimplemented/Invalid instruction");
     }
 }

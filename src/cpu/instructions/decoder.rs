@@ -56,7 +56,7 @@ impl Instructions {
         match byte {
             0x00 => Some(Instructions::NOP()),
             0x01 => Some(Instructions::LD(LogicTargets::BC, LogicTargets::N16)),
-            0x02 => Some(Instructions::LD(LogicTargets::BC, LogicTargets::A)),
+            0x02 => Some(Instructions::LDR16R8(LogicTargets::BC, LogicTargets::A)),
             0x03 => Some(Instructions::INC(LogicTargets::BC)),
             0x04 => Some(Instructions::INC(LogicTargets::B)),
             0x05 => Some(Instructions::DEC(LogicTargets::B)),
@@ -124,7 +124,7 @@ impl Instructions {
             0x58..=0x5F => Some(Instructions::LD(LogicTargets::E, tail)),
             0x60..=0x67 => Some(Instructions::LD(LogicTargets::H, tail)),
             0x68..=0x6F => Some(Instructions::LD(LogicTargets::L, tail)),
-            0x70..=0x75 | 0x77 => Some(Instructions::LD(LogicTargets::HL, tail)),
+            0x70..=0x75 | 0x77 => Some(Instructions::LDR16R8(LogicTargets::HL, tail)),
             0x76 => Some(Instructions::HALT()),
             0x78..=0x7F => Some(Instructions::LD(LogicTargets::A, tail)),
             0x80..=0x87 => Some(Instructions::ADD(tail)),
