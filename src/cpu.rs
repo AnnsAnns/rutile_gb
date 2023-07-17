@@ -37,5 +37,9 @@ impl CPU {
             self.registry.pc += 1;
         }
         self.last_instruction = instruction;
+
+        if self.memory.in_bootrom && self.registry.pc == 0x100 {
+            self.memory.in_bootrom = false;
+        }
     }
 }

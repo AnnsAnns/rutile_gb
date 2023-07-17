@@ -1,4 +1,4 @@
-use eframe::{egui::{self, RichText}, epaint::Color32};
+use eframe::{egui::{self, RichText, Widget}, epaint::Color32};
 
 use crate::cpu::CPU;
 use crate::cpu::instructions::Instructions;
@@ -8,7 +8,8 @@ pub struct MyApp {
     cpu: CPU,
     halt: bool,
     single_step: bool,
-    img: egui::ColorImage
+    img: egui::ColorImage,
+    picked_path: String,
 }
 
 impl MyApp {
@@ -18,7 +19,8 @@ impl MyApp {
             cpu: cpu,
             halt: false,
             img: egui::ColorImage::new([160, 144], Color32::WHITE),
-            single_step: false
+            single_step: false,
+            picked_path: "No Game Selected".to_string(),
         }
     }
 }
@@ -37,7 +39,14 @@ impl eframe::App for MyApp {
                 Default::default()
             );
 
-            ui.heading("Rutil Gameboy Emulator");
+            ui.heading(format!("Rutil Gameboy Emulator - {}", self.picked_path));
+            if ui.button("Open file…").clicked() {
+                if let Some(path) = rfd::FileDialog::new().pick_file() {
+                    self.picked_path = path.display().to_string();
+                    let data: Vec<u8> = std::fs::read(path.display().to_string()).unwrap();
+                    self.cpu.memory.load_rom(data)
+                }
+            }
             ui.add(egui::Slider::new(&mut self.speed, 0..=100).text("Emulator Speed"));
             if ui.button("Stop/Resume").clicked() {
                 self.halt = !self.halt;
@@ -78,11 +87,13 @@ impl eframe::App for MyApp {
                         N: {}\n
                         H: {}\n
                         C: {}\n
+                        Bootrom: {}\n
                         ",
                         self.cpu.registry.f.z_zero,
                         self.cpu.registry.f.n_subtraction_bcd,
                         self.cpu.registry.f.h_half_carry_bcd,
                         self.cpu.registry.f.c_carry,
+                        self.cpu.memory.in_bootrom
                         ));
                 });
                 ui.vertical(|ui| {
@@ -104,11 +115,11 @@ impl eframe::App for MyApp {
             ui.vertical(|ui| {
                 ui.label(RichText::new("Memory:").strong().underline());
                 egui::ScrollArea::vertical().show(ui, |ui| {
-                    ui.label(egui::RichText::new(format!("{:?}", self.cpu.memory.memory)).monospace());
+                    ui.label(egui::RichText::new(format!("{:02X?}", self.cpu.memory.memory)).monospace());
                 });
             })
         });
 
-        ctx.request_repaint();
+        ctx.request_repaint(); // The loop runs at VSYNC, Emulator runs on it's own speed
     }
 }

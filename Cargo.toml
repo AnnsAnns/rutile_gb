@@ -8,3 +8,4 @@ authors = ["Annsann <github@annsann.eu>"]
 
 [dependencies]
 eframe = "0.22.0"
+rfd = "0.11"
