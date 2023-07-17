@@ -33,7 +33,7 @@ impl CPU {
         self.registry.interrupts_enabled = false;
     }
 
-    fn ei(&mut self) {
+    pub fn ei(&mut self) {
         self.registry.interrupts_enabled = true;
     }
 

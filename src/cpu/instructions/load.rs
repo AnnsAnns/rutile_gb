@@ -14,11 +14,15 @@ impl CPU {
             LogicTargets::H => self.registry.h,
             LogicTargets::L => self.registry.l,
             LogicTargets::N8 => self.memory.read_byte(self.registry.pc),
-            LogicTargets::HL => {
-                let address = self.registry.get_hl();
-                self.memory.read_byte(address)
-            }
-            _ => panic!("Invalid SET Instruction"),
+            LogicTargets::HL |
+            LogicTargets::AF |
+            LogicTargets::BC |
+            LogicTargets::DE => {
+                let val = self.target_to_value_r16(target);
+                self.memory.read_byte(val)
+            },
+
+            _ => panic!("Invalid target_to_value_r8 {:#?}", target),
         }
     }
 
@@ -30,7 +34,7 @@ impl CPU {
             LogicTargets::AF => self.registry.get_af(),
             LogicTargets::N16 => self.memory.read_word(self.registry.pc),
             LogicTargets::SP => self.registry.sp,
-            _ => panic!("Invalid SET Instruction"),
+            _ => panic!("Invalid target_to_value_r16 {:#?}", target),
         }
     }
 
@@ -126,7 +130,7 @@ impl CPU {
                     LogicTargets::BC | LogicTargets::DE | LogicTargets::HL | LogicTargets::AF | LogicTargets::SP => {
                         self.ld_r16(target, value);
                     },
-                    _ => panic!("Invalid SET Instruction"),
+                    _ => panic!("Invalid SET Instruction {:?} {:?}", target, value),
                 }
             },
             Instructions::LDHL(value) => self.ld_mem_r8(&LogicTargets::HL, value),

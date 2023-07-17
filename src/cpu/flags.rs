@@ -15,6 +15,7 @@ pub enum FlagCondition {
     NZNotZero,
     CCarry,
     NCNotCarry,
+    ALWAYS
 }
 
 pub struct Flags {

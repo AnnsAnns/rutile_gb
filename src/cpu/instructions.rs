@@ -7,6 +7,7 @@ mod mem;
 mod misc;
 mod bitop;
 mod load;
+mod jumps;
 
 #[derive(Debug)]
 pub enum LogicTargets {
@@ -93,11 +94,11 @@ pub enum Instructions {
     JP(LogicTargets),
     JPC(FlagCondition, LogicTargets),
     JR(LogicTargets),
-    JRC(LogicTargets),
+    JRC(LogicTargets, FlagCondition),
     RET(),
     RETC(FlagCondition),
     RETI(),
-    RST(LogicTargets),
+    RST(u8),
 
     // Stack Op Instructions
     ADDSP(LogicTargets),
@@ -136,6 +137,9 @@ impl CPU {
             return;
         }
         if self.execute_load(&instruction) {
+            return;
+        }
+        if self.jump_execution(&instruction) {
             return;
         }
         panic!("Unimplemented/Invalid instruction")

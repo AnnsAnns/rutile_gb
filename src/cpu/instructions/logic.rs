@@ -137,7 +137,8 @@ impl CPU {
             _ => panic!("Unimplemented/Invalid DEC target"),
         };
 
-        *target -= 1;
+        let (value, _overflow) = target.overflowing_sub(1);
+        *target = value;
         self.registry.f.z_zero = *target == 0;
         self.registry.f.n_subtraction_bcd = true;
         self.registry.f.h_half_carry_bcd = (*target & 0xF) == 0xF;
